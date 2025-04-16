@@ -3,6 +3,7 @@ package org.godotengine.plugin.firebase
 import android.app.Activity
 import android.content.Intent
 import android.view.View
+import org.godotengine.godot.Dictionary
 import org.godotengine.godot.Godot
 import org.godotengine.godot.plugin.GodotPlugin
 import org.godotengine.godot.plugin.SignalInfo
@@ -12,6 +13,7 @@ class FirebasePlugin(godot: Godot) : GodotPlugin(godot) {
     override fun getPluginName() = BuildConfig.GODOT_PLUGIN_NAME
 
     private val authManager = FirebaseAuthManager(this)
+    private val firestoreManager = FirebaseFirestoreManager(this)
 
     override fun onMainCreate(activity: Activity?): View? {
         activity?.let { authManager.init(it) }
@@ -25,6 +27,7 @@ class FirebasePlugin(godot: Godot) : GodotPlugin(godot) {
     override fun getPluginSignals(): MutableSet<SignalInfo> {
         val signals: MutableSet<SignalInfo> = mutableSetOf()
         signals.addAll(authManager.authSignals())
+        signals.addAll(firestoreManager.firestoreSignals())
         return signals
     }
 
@@ -33,7 +36,7 @@ class FirebasePlugin(godot: Godot) : GodotPlugin(godot) {
     }
 
     /**
-     * Authentication
+     * Authentication Manager
      */
     @UsedByGodot
     fun signInAnonymously() = authManager.signInAnonymously()
@@ -64,4 +67,20 @@ class FirebasePlugin(godot: Godot) : GodotPlugin(godot) {
 
     @UsedByGodot
     fun deleteUser() = authManager.deleteUser()
+
+    /**
+     * Firestore Manager
+     */
+
+    @UsedByGodot
+    fun firestoreAddOrSetDocument(collection: String, documentId: String, data: Dictionary) = firestoreManager.addOrSetDocument(collection, documentId, data)
+
+    @UsedByGodot
+    fun firestoreGetDocument(collection: String, documentId: String) = firestoreManager.getDocument(collection, documentId)
+
+    @UsedByGodot
+    fun firestoreUpdateDocument(collection: String, documentId: String, data: Dictionary) = firestoreManager.updateDocument(collection, documentId, data)
+
+    @UsedByGodot
+    fun firestoreDeleteDocument(collection: String, documentId: String) = firestoreManager.deleteDocument(collection, documentId)
 }

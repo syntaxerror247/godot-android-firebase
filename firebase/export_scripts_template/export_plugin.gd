@@ -29,9 +29,9 @@ class AndroidExportPlugin extends EditorExportPlugin:
 
 	func _get_android_dependencies(platform, debug):
 		if debug:
-			return PackedStringArray(["com.google.firebase:firebase-auth:22.3.1", "com.google.android.gms:play-services-auth:21.0.0"])
+			return PackedStringArray(["com.google.firebase:firebase-auth:22.3.0", "com.google.android.gms:play-services-auth:21.0.0", "com.google.firebase:firebase-firestore:25.1.2"])
 		else:
-			return PackedStringArray(["com.google.firebase:firebase-auth:22.3.1", "com.google.android.gms:play-services-auth:21.0.0"])
+			return PackedStringArray(["com.google.firebase:firebase-auth:22.3.0", "com.google.android.gms:play-services-auth:21.0.0", "com.google.firebase:firebase-firestore:25.1.2"])
 
 	func _get_name():
 		return _plugin_name
