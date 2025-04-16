@@ -30,6 +30,9 @@ class FirebaseAuthManager(private val plugin: FirebasePlugin) {
 		signals.add(SignalInfo("auth_success", Dictionary::class.java))
 		signals.add(SignalInfo("auth_failure", String::class.java))
 		signals.add(SignalInfo("sign_out_success", Boolean::class.javaObjectType))
+		signals.add(SignalInfo("password_reset_sent", Boolean::class.javaObjectType))
+		signals.add(SignalInfo("email_verification_sent", Boolean::class.javaObjectType))
+		signals.add(SignalInfo("user_deleted", Boolean::class.javaObjectType))
 		return signals
 	}
 
@@ -38,7 +41,7 @@ class FirebaseAuthManager(private val plugin: FirebasePlugin) {
 		val resId = activity.resources.getIdentifier("default_web_client_id", "string", activity.packageName)
 
 		if (resId == 0) {
-			Log.e("FirebaseAuthManager", "default_web_client_id not found in app resources.")
+			Log.e(TAG, "default_web_client_id not found in app resources.")
 			return
 		}
 
@@ -83,6 +86,7 @@ class FirebaseAuthManager(private val plugin: FirebasePlugin) {
 		auth.createUserWithEmailAndPassword(email, password)
 			.addOnSuccessListener {
 				Log.d(TAG, "User created with email: $email")
+				plugin.emitGodotSignal("auth_success", getCurrentUser())
 			}
 			.addOnFailureListener { e ->
 				Log.d(TAG, "User creation failed", e)
@@ -99,6 +103,32 @@ class FirebaseAuthManager(private val plugin: FirebasePlugin) {
 			.addOnFailureListener { e ->
 				Log.d(TAG, "Sign-in with email failed", e)
 				plugin.emitGodotSignal("auth_failure", e.message ?: "Unknown error")
+			}
+	}
+
+	fun sendEmailVerification() {
+		auth.currentUser?.sendEmailVerification()
+			?.addOnSuccessListener {
+				Log.d(TAG, "Verification email sent.")
+				plugin.emitGodotSignal("email_verification_sent", true)
+			}
+			?.addOnFailureListener { e ->
+				Log.e(TAG, "Failed to send verification email", e)
+				plugin.emitGodotSignal("email_verification_sent", false)
+				plugin.emitGodotSignal("auth_failure", "Failed to send verification email: ${e.message}")
+			}
+	}
+
+	fun sendPasswordResetEmail(email: String) {
+		auth.sendPasswordResetEmail(email)
+			.addOnSuccessListener {
+				Log.d(TAG, "Password reset email sent to $email.")
+				plugin.emitGodotSignal("password_reset_sent", true)
+			}
+			.addOnFailureListener { e ->
+				Log.e(TAG, "Password reset failed", e)
+				plugin.emitGodotSignal("password_reset_sent", false)
+				plugin.emitGodotSignal("auth_failure", "Failed to send verification email: ${e.message}")
 			}
 	}
 
@@ -154,6 +184,21 @@ class FirebaseAuthManager(private val plugin: FirebasePlugin) {
 			.addOnFailureListener { e ->
 				Log.d(TAG, "Sign out failed", e)
 				plugin.emitGodotSignal("sign_out_success", false)
+				plugin.emitGodotSignal("auth_failure", "Failed to sign out: ${e.message}")
 			}
 	}
+
+	fun deleteUser() {
+		auth.currentUser?.delete()
+			?.addOnSuccessListener {
+				Log.d(TAG, "User deleted.")
+				plugin.emitGodotSignal("user_deleted", true)
+			}
+			?.addOnFailureListener { e ->
+				Log.e(TAG, "Failed to delete user", e)
+				plugin.emitGodotSignal("user_deleted", false)
+				plugin.emitGodotSignal("auth_failure", "Delete failed: ${e.message}")
+			}
+	}
+
 }

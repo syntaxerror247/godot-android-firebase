@@ -45,6 +45,12 @@ class FirebasePlugin(godot: Godot) : GodotPlugin(godot) {
     fun signInWithEmailPassword(email: String, password: String) = authManager.signInWithEmailPassword(email, password)
 
     @UsedByGodot
+    fun sendEmailVerification() = authManager.sendEmailVerification()
+
+    @UsedByGodot
+    fun sendPasswordResetEmail(email: String) = authManager.sendPasswordResetEmail(email)
+
+    @UsedByGodot
     fun signInWithGoogle() = authManager.signInWithGoogle()
 
     @UsedByGodot
@@ -55,4 +61,7 @@ class FirebasePlugin(godot: Godot) : GodotPlugin(godot) {
 
     @UsedByGodot
     fun signOut() = authManager.signOut()
+
+    @UsedByGodot
+    fun deleteUser() = authManager.deleteUser()
 }
