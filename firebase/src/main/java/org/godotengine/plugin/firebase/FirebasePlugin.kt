@@ -14,6 +14,7 @@ class FirebasePlugin(godot: Godot) : GodotPlugin(godot) {
 
     private val authManager = FirebaseAuthManager(this)
     private val firestoreManager = FirebaseFirestoreManager(this)
+    private val storageManager = FirebaseStorageManager(this)
 
     override fun onMainCreate(activity: Activity?): View? {
         activity?.let { authManager.init(it) }
@@ -28,6 +29,7 @@ class FirebasePlugin(godot: Godot) : GodotPlugin(godot) {
         val signals: MutableSet<SignalInfo> = mutableSetOf()
         signals.addAll(authManager.authSignals())
         signals.addAll(firestoreManager.firestoreSignals())
+        signals.addAll(storageManager.storageSignals())
         return signals
     }
 
@@ -83,4 +85,20 @@ class FirebasePlugin(godot: Godot) : GodotPlugin(godot) {
 
     @UsedByGodot
     fun firestoreDeleteDocument(collection: String, documentId: String) = firestoreManager.deleteDocument(collection, documentId)
+
+    /**
+     * Cloud Storage
+     */
+
+    @UsedByGodot
+    fun storageUploadFile(path: String, localFilePath: String) = storageManager.uploadFile(path, localFilePath)
+
+    @UsedByGodot
+    fun storageDownloadFile(path: String, destinationPath: String) = storageManager.downloadFile(path, destinationPath)
+
+    @UsedByGodot
+    fun storageDeleteFile(path: String) = storageManager.deleteFile(path)
+
+    @UsedByGodot
+    fun storageListFiles(path: String) = storageManager.listFiles(path)
 }

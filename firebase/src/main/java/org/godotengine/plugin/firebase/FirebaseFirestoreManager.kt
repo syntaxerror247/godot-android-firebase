@@ -1,7 +1,8 @@
 package org.godotengine.plugin.firebase
 
 import android.util.Log
-import com.google.firebase.firestore.FirebaseFirestore
+import com.google.firebase.Firebase
+import com.google.firebase.firestore.firestore
 import org.godotengine.godot.Dictionary
 import org.godotengine.godot.plugin.SignalInfo
 
@@ -10,7 +11,7 @@ class FirebaseFirestoreManager(private val plugin: FirebasePlugin) {
 		private const val TAG = "FirebaseFirestore"
 	}
 
-	private val db = FirebaseFirestore.getInstance()
+	private val db = Firebase.firestore
 
 	fun firestoreSignals(): MutableSet<SignalInfo> {
 		val signals: MutableSet<SignalInfo> = mutableSetOf()
